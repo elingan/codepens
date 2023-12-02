@@ -1,0 +1,43 @@
+@import url('https://cdn.jsdelivr.net/gh/jgthms/minireset.css@master/minireset.min.css');
+
+#progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 10px;
+  background-color: peru;
+  animation: progress auto linear;
+  animation-timeline: scroll(root);
+
+}
+
+@keyframes progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+header {
+  width: 100vw;
+  height: 100vh;
+  /* other styles */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  font-size: 2rem;
+  background-color: floralwhite;
+
+}
+
+main {
+  width: 100vw;
+  height: 1000vh;
+  /* other styles */
+  text-align: center;
+}

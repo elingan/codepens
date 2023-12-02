@@ -1,0 +1,73 @@
+@import url('https://cdn.jsdelivr.net/gh/jgthms/minireset.css@master/minireset.min.css');
+
+html {
+  height: 100vh;
+  overflow: hidden;
+}
+
+body {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+header,
+footer {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  font-size: 2rem;
+  background-color: black;
+  color: white;
+
+  /* scroll animation */
+  animation: hide linear both;
+
+  scroll-snap-align: start;
+}
+
+footer {
+  scroll-snap-align: end;
+}
+
+section {
+  scroll-snap-align: start;
+}
+
+section header {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  /* not relevant */
+  height: 5rem;
+  background-color: whitesmoke;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+}
+
+figure {
+  height: calc(100vh - 5rem);
+  padding: 1rem;
+  animation: reveal linear both;
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  object-position: center;
+  object-fit: cover;
+}
+
+figCaption {
+  display: none;
+}
