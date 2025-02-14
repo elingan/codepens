@@ -1,52 +1,89 @@
-let currentSection = 0 // Mantén un registro de la sección actual
+let isRolling = false
+let isTouched = false
+let isScrolled = false
 
-function handle() {}
+let currentSectionId = null
+let currentSection = null
+let currentSectionPosition = null
+let scrolledSections = []
+let scrolledSectionIds = []
 
-function handleScroll(event) {
-  console.log(event.deltaY)
-  // if (event.deltaY > 0) {
-  //   // Desplazarse hacia abajo
-  //   if (currentSection < 4) currentSection++
-  // } else {
-  //   // Desplazarse hacia arriba
-  //   if (currentSection > 0) currentSection--
-  // }
-  // console.log(currentSection)
-  // scrollToSection(currentSection)
-}
+let observer = new IntersectionObserver(handleIntersect, { threshold: 0.1 })
 
-function scrollToSection(section) {
-  const targetSection = document.getElementById(`section${section + 1}`)
-  //targetSection.scrollIntoView({ behavior: 'smooth' })
-}
+const currentScrollPosition = document.documentElement.scrollTop
+const totalHeight = Math.max(
+  document.body.scrollHeight,
+  document.body.offsetHeight,
+  document.documentElement.clientHeight,
+  document.documentElement.scrollHeight,
+  document.documentElement.offsetHeight
+)
 
-let options = {
-  root: null, // null significa el viewport
-  rootMargin: '0px',
-  threshold: 0.25 // 50% del elemento visible
-}
-
-let observer = new IntersectionObserver(handleIntersect, options)
+const viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
 
 function handleIntersect(entries, observer) {
   entries.forEach((entry) => {
     if (entry.isIntersecting) {
-      // Aquí puedes manejar lo que sucede cuando una sección se vuelve visible
-      console.log(`La sección ${entry.target.id} es ahora visible`)
-      // setTimeout(() => {
-      //   const section = document.getElementById(entry.target.id)
-      //   section.scrollIntoView({ block: 'start' })
-      // }, 500)
+      currentSectionId = entry.target.id
+      currentSectionPosition = scrolledSectionIds.indexOf(currentSectionId)
+      currentSection = scrolledSections[currentSectionPosition]
     }
   })
 }
 
+function handleScroll(isUp = false) {
+  const currentScrollPosition = document.documentElement.scrollTop
+  let scroll = 0
+  if (isUp) {
+    scroll = currentScrollPosition - viewHeight <= 0 ? 0 : currentScrollPosition - viewHeight
+  } else {
+    scroll =
+      currentScrollPosition + viewHeight >= totalHeight ? currentScrollPosition : currentScrollPosition + viewHeight
+  }
+  if (currentScrollPosition === scroll) return
+  window.scrollTo({ top: scroll, behavior: 'smooth' })
+}
+
+document.addEventListener(
+  'wheel',
+  (event) => {
+    event.preventDefault()
+    const currentScrollPosition = document.documentElement.scrollTop
+    if (!isRolling || currentScrollPosition <= 0 || currentScrollPosition === totalHeight - viewHeight) {
+      handleScroll(event.deltaY < 0)
+      isRolling = true
+    }
+  },
+  { passive: false }
+)
+
+document.onkeydown = (event) => {
+  if (['ArrowUp', 'PageUp', 'ArrowDown', 'PageDown'].includes(event.key)) {
+    event.preventDefault()
+    handleScroll(['ArrowUp', 'PageUp'].includes(event.key))
+  }
+}
+
+document.ontouchend = () => {
+  isRolling = false
+}
+
+document.onscrollend = () => {
+  isRolling = false
+}
+
+document.onmouseup = (event) => {
+  isRolling = false
+  setTimeout(() => {
+    currentSection.scrollIntoView({ behavior: 'smooth' })
+  }, 100)
+}
+
 document.onreadystatechange = function () {
   if (document.readyState === 'complete') {
-    // let section = document.getElementsByTagName('footer')[0]
-    // section = document.getElementById('development')
-    // section.scrollIntoView({ block: 'start' })
-    document.querySelectorAll('.scrollable').forEach((section) => {
+    scrolledSections = document.querySelectorAll('[data-scroll-snapping]')
+    scrolledSections.forEach((section) => {
+      scrolledSectionIds.push(section.id)
       observer.observe(section)
     })
   }
